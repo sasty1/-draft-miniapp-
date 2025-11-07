@@ -1,0 +1,49 @@
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  try {
+    const { text, imageUrl } = await req.json();
+
+    if (!process.env.NEYNAR_API_KEY || !process.env.FARCASTER_SIGNER_UUID) {
+      return NextResponse.json(
+        { success: false, error: "Server env missing NEYNAR_API_KEY or FARCASTER_SIGNER_UUID" },
+        { status: 500 }
+      );
+    }
+
+    const payload: any = {
+      signer_uuid: process.env.FARCASTER_SIGNER_UUID,
+      text,
+    };
+
+    // If user provided an image URL, include it as an embed
+    if (imageUrl && typeof imageUrl === "string" && imageUrl.trim().length > 0) {
+      payload.embeds = [{ url: imageUrl.trim() }];
+    }
+
+    const res = await fetch("https://api.neynar.com/v2/farcaster/casts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api_key": process.env.NEYNAR_API_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      return NextResponse.json(
+        { success: false, error: err || `Neynar error: ${res.status}` },
+        { status: 500 }
+      );
+    }
+
+    const data = await res.json();
+    return NextResponse.json({ success: true, data });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error?.message || "Unknown server error" },
+      { status: 500 }
+    );
+  }
+}
