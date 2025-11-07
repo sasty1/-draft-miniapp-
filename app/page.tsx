@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 interface Draft {
@@ -17,18 +16,15 @@ export default function Home() {
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [isPosting, setIsPosting] = useState(false);
 
-  // Load drafts from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("drafts");
     if (saved) setDrafts(JSON.parse(saved));
   }, []);
 
-  // Save drafts to localStorage
   useEffect(() => {
     localStorage.setItem("drafts", JSON.stringify(drafts));
   }, [drafts]);
 
-  // Auto-post scheduled drafts
   useEffect(() => {
     const interval = setInterval(() => {
       drafts.forEach(async (draft) => {
@@ -45,7 +41,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [drafts]);
 
-  // Save new draft
   const saveDraft = () => {
     if (!content.trim()) return alert("Post cannot be empty!");
     const newDraft: Draft = {
@@ -61,7 +56,6 @@ export default function Home() {
     setScheduledTime("");
   };
 
-  // Post manually
   const postNow = async (draft: Draft) => {
     setIsPosting(true);
     try {
@@ -104,7 +98,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold mb-6">post sc/hedule</h1>
+      <h1 className="text-2xl font-bold mb-6">Draft & Auto-Post App</h1>
 
       <textarea
         className="w-full max-w-xl p-3 rounded bg-gray-800 text-white"
@@ -161,6 +155,7 @@ export default function Home() {
                   className="w-full mt-2 rounded"
                 />
               )}
+
               <p className="text-sm text-gray-400">
                 Status:{" "}
                 {draft.status === "Posted"
