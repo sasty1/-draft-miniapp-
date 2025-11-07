@@ -11,9 +11,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Build payload (text + optional image embed)
+    // Build payload for Neynar API
     const payload: any = {
-      signer_uuid: process.env.FARCASTER_SIGNER_UUID,
+      signer_uuid: process.env.NEYNAR_SIGNER_UUID, // ✅ Correct variable
       text: message,
     };
 
