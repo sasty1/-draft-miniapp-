@@ -104,7 +104,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold mb-6">Draft & Auto-Post App</h1>
+      <h1 className="text-2xl font-bold mb-6">post sc/hedule</h1>
 
       <textarea
         className="w-full max-w-xl p-3 rounded bg-gray-800 text-white"
