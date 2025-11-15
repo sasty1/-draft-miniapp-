@@ -11,18 +11,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Build payload for Neynar API
     const payload: any = {
-      signer_uuid: process.env.NEYNAR_SIGNER_UUID, // ✅ Correct variable
+      signer_uuid: process.env.NEYNAR_SIGNER_UUID,
       text: message,
     };
 
-    if (imageUrl && imageUrl.trim() !== "") {
+    if (imageUrl?.trim()) {
       payload.embeds = [{ url: imageUrl.trim() }];
     }
 
-    // Send to Neynar API
-    const response = await fetch("https://api.neynar.com/v2/farcaster/casts", {
+    const response = await fetch("https://api.neynar.com/v2/farcaster/cast", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,6 +40,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, data });
+
   } catch (error: any) {
     console.error("Server error:", error);
     return NextResponse.json(
@@ -49,4 +48,5 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
+}	
+
