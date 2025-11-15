@@ -1,3 +1,4 @@
+// app/api/send/route.ts
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -11,42 +12,38 @@ export async function POST(req: Request) {
       );
     }
 
-    const payload: any = {
-      signer_uuid: process.env.NEYNAR_SIGNER_UUID,
-      text: message,
+    const payload: Record<string, any> = {
+      signer_uuid: process.env.NEYNAR_SIGNER_UUID, // <- match your env name
+      text: message.trim(),
     };
 
-    if (imageUrl?.trim()) {
+    if (imageUrl && imageUrl.trim() !== "") {
       payload.embeds = [{ url: imageUrl.trim() }];
     }
 
-    const response = await fetch("https://api.neynar.com/v2/farcaster/cast", {
+    const resp = await fetch("https://api.neynar.com/v2/farcaster/cast", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        api_key: process.env.NEYNAR_API_KEY || "",
+        api_key: process.env.NEYNAR_API_KEY ?? "",
       },
       body: JSON.stringify(payload),
+      cache: "no-store",
     });
 
-    const data = await response.json();
+    const data = await resp.json();
 
-    if (!response.ok) {
+    if (!resp.ok) {
       console.error("Error from Neynar:", data);
-      return NextResponse.json(
-        { success: false, error: data },
-        { status: 500 }
-      );
+      return NextResponse.json({ success: false, error: data }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data });
-
-  } catch (error: any) {
-    console.error("Server error:", error);
+  } catch (err: any) {
+    console.error("Server error:", err);
     return NextResponse.json(
-      { success: false, error: error.message || "Unknown server error" },
+      { success: false, error: err?.message ?? "Unknown server error" },
       { status: 500 }
     );
   }
-}	
-
+}
